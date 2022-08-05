@@ -1,11 +1,32 @@
-from distutils import extension
-import uvicorn
-from fastapi import FastAPI
-from pydantic import BaseModel
-import base64
-import io
-from PIL import Image
+# tensorflow imports
 import random
+from PIL import Image
+import io
+import base64
+from pydantic import BaseModel
+from fastapi import FastAPI
+import uvicorn
+import tensorflow as tf
+from tensorflow.keras.preprocessing import image
+import numpy as np
+from tensorflow.keras.models import load_model
+import uuid
+
+
+model = load_model('alzheimers_model.h5')
+
+
+def model_predict(img_path, model):
+    print(img_path)
+    img = image.load_img(img_path, target_size=(150, 150))
+
+    # Preprocessing the image
+    x = image.img_to_array(img)
+    x = np.expand_dims(x, axis=0)
+    # Making Predictions
+    preds = model.predict(x)
+    preds = np.argmax(preds, axis=1)
+    return preds
 
 
 app = FastAPI()
@@ -53,7 +74,13 @@ async def index():
 def get_predictionbase64(img: ImageModel):
     # Load the image
     image = image_generator(img.base64str)
+    file_path = f"./{str(uuid.uuid4())}.png"
+    image.save(file_path)
+
     # Make Prediction
+    preds = model_predict(file_path, model)
+    print(preds)
+    # return resp
     prediction = predict(image)
     return prediction
 
