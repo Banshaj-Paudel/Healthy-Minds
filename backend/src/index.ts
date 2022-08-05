@@ -2,6 +2,10 @@ import express, { RequestHandler } from "express";
 import { Doctor, PrismaClient } from "@prisma/client";
 import jsonwebtoken from "jsonwebtoken";
 import { JWT_SECRET } from "./config";
+import morgan from "morgan";
+import { image_upload } from "./upload";
+import fileUpload from "express-fileupload";
+import dotenv from "dotenv";
 
 interface AccessPayload {
   userId: number;
@@ -36,10 +40,17 @@ const hasAuthorized: RequestHandler = async (req, res, next) => {
   }
 };
 
+dotenv.config();
+
 const app = express();
 const prisma = new PrismaClient();
 
 app.use(express.json());
+app.use(morgan("tiny"));
+
+app.use(fileUpload());
+
+app.use("/image", image_upload);
 
 app.post("/profile", hasAuthorized, function (req, res) {
   const { password, ...restUser } = req.user as Doctor;
@@ -70,5 +81,5 @@ app.get("/", (_req, res) => {
 });
 
 app.listen(3000, () => {
-  console.log("Server is running on port 3000");
+  console.log("Server is running on port http://localhost:3000");
 });
