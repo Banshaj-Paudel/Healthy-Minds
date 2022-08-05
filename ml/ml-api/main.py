@@ -23,7 +23,7 @@ class ResponseModel(BaseModel):
 
 
 def image_generator(base64string):
-    base64_utf_enc = base64string.encode('utf-8')
+    base64_utf_enc = base64string.encode("utf-8")
     base64bytes = base64.b64decode(base64_utf_enc)
     bytes_object = io.BytesIO(base64bytes)
     image = Image.open(bytes_object)
@@ -34,7 +34,8 @@ def predict(image):
     dis_status = random.choice(["Risk", "No Risk"])
     probability = random.uniform(0.5, 1)
     dementiaType = random.choice(
-        ["No Dementia", "Very Mild Dementia", "Mild Dementia", "Moderate Dementia"])
+        ["No Dementia", "Very Mild Dementia", "Mild Dementia", "Moderate Dementia"]
+    )
     return {
         "status": "success",
         "message": dis_status,
@@ -61,5 +62,5 @@ def start():
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     start()
