@@ -2,6 +2,9 @@ import express from "express";
 import morgan from "morgan";
 import { image_upload } from "./upload";
 import fileUpload from "express-fileupload";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
 
@@ -9,6 +12,7 @@ app.use(express.json());
 app.use(morgan("tiny"));
 
 app.use(fileUpload());
+
 app.use("/image", image_upload);
 
 app.get("/", (req, res) => {

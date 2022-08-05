@@ -2,6 +2,7 @@ import express from "express";
 import { Request } from "express";
 import uploadFile from "express-fileupload";
 import axios from "axios";
+
 export const image_upload = express.Router();
 
 image_upload.post("/", async (req: Request, res) => {
@@ -34,8 +35,9 @@ image_upload.post("/", async (req: Request, res) => {
 
 async function sendImage(base64String: string) {
   try {
+    console.log(process.env.API_URL);
     const response = await axios.post(
-      "http://localhost:8000/api/v1/predict",
+      `${process.env.API_URL}/api/v1/predict`,
       {
         base64str: base64String,
       },
