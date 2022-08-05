@@ -18,6 +18,7 @@ class ImageModel(BaseModel):
 class ResponseModel(BaseModel):
     status: str
     message: str
+    dementiaType: str
     probability: float
 
 
@@ -31,10 +32,13 @@ def image_generator(base64string):
 
 def predict(image):
     dis_status = random.choice(["Risk", "No Risk"])
-    probability = random.random(0, 1)
+    probability = random.uniform(0.5, 1)
+    dementiaType = random.choice(
+        ["No Dementia", "Very Mild Dementia", "Mild Dementia", "Moderate Dementia"])
     return {
         "status": "success",
         "message": dis_status,
+        "dementiaType": dementiaType,
         "probability": probability,
     }
 
