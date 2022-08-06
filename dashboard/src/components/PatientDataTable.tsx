@@ -4,6 +4,7 @@ import HttpService from "../services/http";
 import AddPatientData from "./AddPatientData";
 
 export interface IPatient {
+  id: number;
   name: string;
   diagnostics: string;
   healthStatus: string;
@@ -41,7 +42,6 @@ const PatientDataTable = () => {
 
   return (
     <>
-
       <table className="ui celled table">
         <thead>
           <tr>
@@ -81,7 +81,9 @@ const PatientDataTable = () => {
                   >
                     Call
                   </a>
-                  <button className="ui button">Generate Report</button>
+                  <a className="ui button" href={`http://localhost:3000/patient/${patient.id}/report`}>
+                    Generate Report
+                  </a>
                 </td>
               </tr>
             );
