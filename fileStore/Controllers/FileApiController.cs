@@ -35,6 +35,8 @@ public class FileApiController : ControllerBase
 
 	[HttpGet]
 	[Route("{id}")]
+  [ProducesResponseType(StatusCodes.Status400BadRequest)]
+  [ProducesResponseType(StatusCodes.Status200OK)]
 	public async Task<IActionResult> GetFileAsync([FromRoute] string id)
 	{
 		var ipfsFile = await engine.FileSystem.GetAsync(id);
