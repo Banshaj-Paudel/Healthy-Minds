@@ -21,21 +21,24 @@ model Doctor {
 }
 
 model Patient {
-  id     Int    @id @default(autoincrement())
+  id     Int     @id @default(autoincrement())
   name   String
   image  String
-  report String
+  report String?
+
+  diagnostics Diagnostic[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  diagnostic Diagnostic[]
 }
 
 model Diagnostic {
-  id          Int    @id @default(autoincrement())
+  id          Int     @id @default(autoincrement())
   name        String
-  probability String
+  probability Float
+  verified    Boolean @default(false)
+  risk        String?
+  message     String?
 
   patient   Patient @relation(fields: [patientId], references: [id])
   patientId Int     @unique
