@@ -7,7 +7,7 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url = "file:./hello.sqlite"
+  url      = "file:./hello.sqlite"
 }
 
 model Doctor {
@@ -15,6 +15,34 @@ model Doctor {
   username String @unique
   password String
   name     String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Patient {
+  id          Int     @id @default(autoincrement())
+  name        String
+  phoneNumber String
+  image       String
+  report      String?
+
+  diagnostics Diagnostic[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Diagnostic {
+  id          Int     @id @default(autoincrement())
+  name        String
+  probability Float
+  verified    Boolean @default(false)
+  risk        String?
+  message     String?
+
+  patient   Patient @relation(fields: [patientId], references: [id])
+  patientId Int     @unique
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

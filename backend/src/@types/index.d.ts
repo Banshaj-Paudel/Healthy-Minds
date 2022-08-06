@@ -1,0 +1,3 @@
+interface AccessPayload {
+  userId: number;
+}
