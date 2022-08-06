@@ -1,5 +1,6 @@
 using Ipfs.Engine;
 using Microsoft.AspNetCore.Mvc;
+using SharpCompress.Readers;
 
 namespace FileStore.Controller;
 
@@ -48,8 +49,11 @@ public class FileApiController : ControllerBase
 			logger.LogWarning($"File with given id, {id} doesn't exist.");
 			return NotFound();
 		}
-		MemoryStream stream = new MemoryStream();
-		ipfsFile.CopyTo(stream);
+		using IReader reader = ReaderFactory.Open(ipfsFile);
+		reader.MoveToNextEntry();
+		using MemoryStream stream = new MemoryStream();
+		reader.OpenEntryStream().CopyTo(stream);
+		
 		logger.LogInformation($"File of length {stream.Length} received.");
 
 		return Ok(new
