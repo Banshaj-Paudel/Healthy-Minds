@@ -1,6 +1,10 @@
 import axios from "axios";
 import { API_URL } from "../config";
 
+enum DiagnosticTypes {
+  ALZHEIMER = "Alzheimer",
+}
+
 interface MlDiagnosticResponse {
   risk: string;
   probability: number;
