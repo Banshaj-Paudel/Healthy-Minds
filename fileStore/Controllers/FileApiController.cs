@@ -19,10 +19,10 @@ public class FileApiController : ControllerBase
 	}
 
 	[HttpPost]
-	public async Task<IActionResult> CreateAsync(string base64string)
+	public async Task<IActionResult> CreateAsync(CreateModel model)
 	{
 		MemoryStream stream = new MemoryStream(
-			Convert.FromBase64String(base64string)
+			Convert.FromBase64String(model.Base64String)
 		);
 
 		var ipfsFile = await engine.FileSystem.AddAsync(stream);
@@ -53,3 +53,5 @@ public class FileApiController : ControllerBase
 		});
 	}
 }
+
+public record CreateModel(string Base64String);
