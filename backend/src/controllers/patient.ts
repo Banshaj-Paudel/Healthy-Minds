@@ -3,6 +3,10 @@ import { getB64Bytes } from "../utils/fileHandler";
 import { hasAuthenticated } from "../middlewares/hasAuthenticated";
 import { prisma } from "../prisma";
 import { getDiagnosticData } from "../utils/mlResponse";
+import ejs from "ejs";
+import { createWriteStream } from "fs";
+
+const htmlToPdf = require("html-pdf-node");
 
 export const patientRouter = Router();
 
@@ -20,16 +24,16 @@ interface UpdateDiagnosticDto {
 patientRouter.post("/", async function (req, res) {
   const newPatient = req.body as CreatePatientDto;
   const bytes = await getB64Bytes(newPatient.image);
-  //const diagData = await getDiagnosticData(bytes);
+  const diagData = await getDiagnosticData(bytes);
 
   const { id: patientId } = await prisma.patient.create({
     data: {
       ...newPatient,
-      // diagnostics: {
-      //   create: {
-      //     ...diagData,
-      //   },
-      // },
+      diagnostics: {
+        create: {
+          ...diagData,
+        },
+      },
     },
     select: {
       id: true,
@@ -76,4 +80,22 @@ patientRouter.get("/", async function (req, res) {
     include: { diagnostics: true },
   });
   return res.json(patients);
+});
+patientRouter.get("/:patientId/report", async function (req, res) {
+  const { patientId } = req.params;
+  const patientData = await prisma.patient.findUnique({
+    where: { id: +patientId },
+    include: { diagnostics: true },
+  });
+
+  if (!patientData) {
+    return res.status(404);
+  }
+
+  const fileName = (Math.random() + 1).toString(36).substring(7) + ".pdf";
+  const htmlStr = await ejs.renderFile("templates/report.ejs", {
+    patient: patientData,
+  });
+
+  res.send(htmlStr);
 });
