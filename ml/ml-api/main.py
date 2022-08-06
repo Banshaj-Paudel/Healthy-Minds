@@ -6,29 +6,30 @@ import base64
 from pydantic import BaseModel
 from fastapi import FastAPI
 import uvicorn
-# import tensorflow as tf
-# from tensorflow.keras.preprocessing import image
-# import numpy as np
-# from tensorflow.keras.models import load_model
+import os
+import tensorflow as tf
+from tensorflow.keras.preprocessing import image
+import numpy as np
+from tensorflow.keras.models import load_model
 import uuid
 
 
-# model = load_model('alzheimers_model')
-# type_labels = ["No Dementia", "Very Mild Dementia",
-#                "Mild Dementia", "Moderate Dementia"]
+model = load_model('final_model')
+model_labels = ["Risk","No Risk"]
 
 
-# def model_predict(img_path, model):
-#     print(img_path)
-#     img = image.load_img(img_path, target_size=(176, 176))
+def model_predict(img_path, model):
+    print(img_path)
+    img = image.load_img(img_path, target_size=(240, 240))
 
-#     # Preprocessing the image
-#     x = image.img_to_array(img)
-#     x = np.expand_dims(x, axis=0)
-#     # Making Predictions
-#     preds = model.predict(x)
-#     preds = np.argmax(preds, axis=1)
-#     return preds
+    # Preprocessing the image
+    x = image.img_to_array(img)
+    x = np.expand_dims(x, axis=0)
+    # Making Predictions
+    preds = model.predict(x)
+    print(f"Probability Array: {preds}")
+    preds = np.argmax(preds, axis=1)
+    return preds
 
 
 app = FastAPI()
@@ -74,10 +75,13 @@ def get_predictionbase64(img: ImageModel):
     file_path = f"./{str(uuid.uuid4())}.png"
     image.save(file_path)
 
-    # Make Prediction
-    # preds = model_predict(file_path, model)
-    # print(preds)
-    # return resp
+    #Make Prediction
+    preds = model_predict(file_path, model)
+    print(preds)
+    if os.path.exists(file_path):
+        os.remove(file_path)
+    else:
+        print("The file does not exist")
     prediction = predict(image)
     return prediction
 
