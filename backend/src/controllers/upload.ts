@@ -1,33 +1,30 @@
 import express, { Request } from "express";
 import uploadFile from "express-fileupload";
 import axios from "axios";
+import fileUpload from "express-fileupload";
 
 export const imageUploadRouter = express.Router();
 
-imageUploadRouter.post("/", async (req: Request, res) => {
+imageUploadRouter.post("/", fileUpload(), async (req: Request, res) => {
   if (!req.files) {
-    return res
-      .json({
-        message: "No file uploaded",
-      })
-      .status(400);
+    return res.status(400).json({ message: "No files were uploaded." });
   }
 
   const image = req.files.image as uploadFile.UploadedFile;
+
   if (!image) {
-    return res
-      .json({
-        message: "Body must contain image filed",
-      })
-      .status(400);
+    return res.status(400).json({
+      message: "Body must contain image filed",
+    });
   }
 
   const encoded_data = Buffer.from(image.data).toString("base64");
+
   try {
     const response = await sendImage(encoded_data);
     return res.json(response);
   } catch (error) {
-    return res.json({ err: "Internal server error" }).status(500);
+    return res.status(500).json({ err: "Internal server error" });
   }
 });
 
