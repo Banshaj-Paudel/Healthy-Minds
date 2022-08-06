@@ -200,3 +200,7 @@ dist/**/*
 
 # ignore yarn.lock
 yarn.lock
+
+# Ignore NN model
+*.h5
+final_model

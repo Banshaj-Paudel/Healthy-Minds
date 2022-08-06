@@ -1,11 +1,40 @@
-from distutils import extension
-import uvicorn
-from fastapi import FastAPI
-from pydantic import BaseModel
-import base64
-import io
-from PIL import Image
+# tensorflow imports
 import random
+from PIL import Image
+import io
+import base64
+from pydantic import BaseModel
+from fastapi import FastAPI
+import uvicorn
+import os
+import tensorflow as tf
+from tensorflow.keras.preprocessing import image
+import numpy as np
+from tensorflow.keras.models import load_model
+import uuid
+
+
+model = load_model('final_model')
+model_labels = ["Risk","No Risk"]
+
+
+def model_predict(img_path, model):
+    print(img_path)
+    img = image.load_img(img_path, target_size=(240, 240))
+
+    # Preprocessing the image
+    x = image.img_to_array(img)
+    x = np.expand_dims(x, axis=0)
+    # Making Predictions
+    result = model.predict(x)
+    prediction = np.argmax(result, axis=1)
+    probability = np.max(result,axis=1)
+    print(prediction)
+    print(probability)
+    return {
+        "prediction": prediction,
+        "probability": probability
+    }
 
 
 app = FastAPI()
@@ -18,7 +47,6 @@ class ImageModel(BaseModel):
 class ResponseModel(BaseModel):
     status: str
     message: str
-    dementiaType: str
     probability: float
 
 
@@ -33,15 +61,7 @@ def image_generator(base64string):
 def predict(image):
     dis_status = random.choice(["Risk", "No Risk"])
     probability = random.uniform(0.5, 1)
-    dementiaType = random.choice(
-        ["No Dementia", "Very Mild Dementia", "Mild Dementia", "Moderate Dementia"]
-    )
-    return {
-        "status": "success",
-        "message": dis_status,
-        "dementiaType": dementiaType,
-        "probability": probability,
-    }
+    
 
 
 @app.get("/")
@@ -53,9 +73,22 @@ async def index():
 def get_predictionbase64(img: ImageModel):
     # Load the image
     image = image_generator(img.base64str)
-    # Make Prediction
-    prediction = predict(image)
-    return prediction
+    file_path = f"./{str(uuid.uuid4())}.png"
+    image.save(file_path)
+    #Make Prediction
+    result = model_predict(file_path, model)
+    dis_status = model_labels[result["prediction"][0]]
+    probability = max(result["probability"])
+    if os.path.exists(file_path):
+        os.remove(file_path)
+    else:
+        print("The file does not exist")
+    return {
+        "status": "success",
+        "message": dis_status,
+        "probability": probability,
+    }
+    
 
 
 def start():
