@@ -6,27 +6,29 @@ import base64
 from pydantic import BaseModel
 from fastapi import FastAPI
 import uvicorn
-import tensorflow as tf
-from tensorflow.keras.preprocessing import image
-import numpy as np
-from tensorflow.keras.models import load_model
+# import tensorflow as tf
+# from tensorflow.keras.preprocessing import image
+# import numpy as np
+# from tensorflow.keras.models import load_model
 import uuid
 
 
-model = load_model('alzheimers_model.h5')
+# model = load_model('alzheimers_model')
+# type_labels = ["No Dementia", "Very Mild Dementia",
+#                "Mild Dementia", "Moderate Dementia"]
 
 
-def model_predict(img_path, model):
-    print(img_path)
-    img = image.load_img(img_path, target_size=(150, 150))
+# def model_predict(img_path, model):
+#     print(img_path)
+#     img = image.load_img(img_path, target_size=(176, 176))
 
-    # Preprocessing the image
-    x = image.img_to_array(img)
-    x = np.expand_dims(x, axis=0)
-    # Making Predictions
-    preds = model.predict(x)
-    preds = np.argmax(preds, axis=1)
-    return preds
+#     # Preprocessing the image
+#     x = image.img_to_array(img)
+#     x = np.expand_dims(x, axis=0)
+#     # Making Predictions
+#     preds = model.predict(x)
+#     preds = np.argmax(preds, axis=1)
+#     return preds
 
 
 app = FastAPI()
@@ -39,7 +41,6 @@ class ImageModel(BaseModel):
 class ResponseModel(BaseModel):
     status: str
     message: str
-    dementiaType: str
     probability: float
 
 
@@ -54,13 +55,9 @@ def image_generator(base64string):
 def predict(image):
     dis_status = random.choice(["Risk", "No Risk"])
     probability = random.uniform(0.5, 1)
-    dementiaType = random.choice(
-        ["No Dementia", "Very Mild Dementia", "Mild Dementia", "Moderate Dementia"]
-    )
     return {
         "status": "success",
         "message": dis_status,
-        "dementiaType": dementiaType,
         "probability": probability,
     }
 
@@ -78,8 +75,8 @@ def get_predictionbase64(img: ImageModel):
     image.save(file_path)
 
     # Make Prediction
-    preds = model_predict(file_path, model)
-    print(preds)
+    # preds = model_predict(file_path, model)
+    # print(preds)
     # return resp
     prediction = predict(image)
     return prediction
