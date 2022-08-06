@@ -24,8 +24,11 @@ public class FileApiController : ControllerBase
 		MemoryStream stream = new MemoryStream(
 			Convert.FromBase64String(model.Base64String)
 		);
+		logger.LogInformation($"{stream.Length} bytes received");
 
+		logger.LogInformation($"Uploading to Ipfs server");
 		var ipfsFile = await engine.FileSystem.AddAsync(stream);
+		logger.LogInformation($"Uploaded to Ipfs server");
 
 		return Ok(new
 		{
@@ -42,10 +45,12 @@ public class FileApiController : ControllerBase
 		var ipfsFile = await engine.FileSystem.GetAsync(id);
 		if (ipfsFile is null)
 		{
+			logger.LogWarning($"File with given id, {id} doesn't exist.");
 			return NotFound();
 		}
 		MemoryStream stream = new MemoryStream();
 		ipfsFile.CopyTo(stream);
+		logger.LogInformation($"File of length {stream.Length} received.");
 
 		return Ok(new
 		{
