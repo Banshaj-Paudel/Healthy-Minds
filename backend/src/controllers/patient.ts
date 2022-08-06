@@ -20,16 +20,16 @@ interface UpdateDiagnosticDto {
 patientRouter.post("/", async function (req, res) {
   const newPatient = req.body as CreatePatientDto;
   const bytes = await getB64Bytes(newPatient.image);
-  const diagData = await getDiagnosticData(bytes);
+  //const diagData = await getDiagnosticData(bytes);
 
   const { id: patientId } = await prisma.patient.create({
     data: {
       ...newPatient,
-      diagnostics: {
-        create: {
-          ...diagData,
-        },
-      },
+      // diagnostics: {
+      //   create: {
+      //     ...diagData,
+      //   },
+      // },
     },
     select: {
       id: true,
@@ -69,4 +69,11 @@ patientRouter.get("/:patientId(d+)", async function (req, res) {
     where: { id: +patientId },
   });
   return res.json(patientData);
+});
+
+patientRouter.get("/", async function (req, res) {
+  const patients = await prisma.patient.findMany({
+    include: { diagnostics: true },
+  });
+  return res.json(patients);
 });
