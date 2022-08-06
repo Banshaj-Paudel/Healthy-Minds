@@ -1,4 +1,5 @@
 import { useContext } from "react";
+import { Link } from "react-router-dom";
 import { UserContext } from "../context/UserProvider";
 
 const Navbar = () => {
@@ -12,12 +13,14 @@ const Navbar = () => {
 
   return (
     <div className="ui secondary container menu">
-      <a className="item">Home</a>
+      <Link className="item" to="/">
+        Home
+      </Link>
       <div className="right menu">
-        <a className="ui item">
+        <Link className="ui item" to="/">
           <i className="user icon"></i>
           {username}
-        </a>
+        </Link>
         <a className="ui item" onClick={logout}>
           Logout
         </a>

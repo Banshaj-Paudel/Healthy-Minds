@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
+import { useLocation, useNavigate, useRoutes } from "react-router-dom";
 import HttpService from "../services/http";
 import AddPatientData from "./AddPatientData";
 
 export interface IPatient {
   name: string;
-  diagnostic: string;
+  diagnostics: string;
   healthStatus: string;
   phoneNumber: string;
 }
@@ -23,11 +24,15 @@ const PatientDataTable = () => {
     const data: IPatient[] = response.data;
 
     for (const patient of data) {
-      patient.diagnostic = patient.diagnostic || "Not Started";
+      patient.diagnostics = patient.diagnostics || "Not Started";
     }
 
-    console.log(response.data);
     setPatients(response.data);
+  };
+
+  const router = useNavigate();
+  const navigateToAddPatient = () => {
+    router("/add");
   };
 
   useEffect(() => {
@@ -36,7 +41,6 @@ const PatientDataTable = () => {
 
   return (
     <>
-      <AddPatientData />
 
       <table className="ui celled table">
         <thead>
@@ -44,7 +48,7 @@ const PatientDataTable = () => {
             <th colSpan={4}>
               <div
                 className="ui left floated small primary labeled icon button"
-                onClick={showModal}
+                onClick={navigateToAddPatient}
               >
                 <i className="user icon"></i> Add Patient
               </div>
