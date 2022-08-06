@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getB64Bytes } from "../utils/blockchainFile";
+import { getB64Bytes } from "../utils/fileHandler";
 import { hasAuthenticated } from "../middlewares/hasAuthenticated";
 import { prisma } from "../prisma";
 import { getDiagnosticData } from "../utils/mlResponse";

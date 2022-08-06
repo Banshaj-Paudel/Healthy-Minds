@@ -1,7 +1,7 @@
 import express, { Request } from "express";
+import fs from "fs";
 import fileUpload from "express-fileupload";
-import { getDiagnosticData } from "../utils/mlResponse";
-
+import crypto from "crypto";
 export const imageUploadRouter = express.Router();
 
 imageUploadRouter.post("/", fileUpload(), async (req: Request, res) => {
@@ -15,14 +15,16 @@ imageUploadRouter.post("/", fileUpload(), async (req: Request, res) => {
       message: "Body must contain image field",
     });
   }
+  let name = `${crypto.randomBytes(20).toString("hex")}.${
+    image.mimetype.split("/")[1]
+  }`;
+  fs.writeFileSync(`uploads/${name}`, image.data);
+  return res.json({
+    file_name: name,
+  });
+});
 
-  const encoded_data = Buffer.from(image.data).toString("base64");
-  console.log(encoded_data);
-  try {
-    const response = await getDiagnosticData(encoded_data);
-    return res.json(response);
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({ err: "Internal server error" });
-  }
+imageUploadRouter.get("/:file_name", async (req, res) => {
+  const file_name = req.params.file_name;
+  res.sendFile(file_name, { root: "uploads/" });
 });
