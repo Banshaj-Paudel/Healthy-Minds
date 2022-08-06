@@ -67,6 +67,7 @@ patientRouter.get("/:patientId(d+)", async function (req, res) {
   const { patientId } = req.params;
   const patientData = await prisma.patient.findUnique({
     where: { id: +patientId },
+    include: { diagnostics: true },
   });
   return res.json(patientData);
 });
