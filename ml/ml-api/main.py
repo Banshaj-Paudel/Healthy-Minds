@@ -26,10 +26,15 @@ def model_predict(img_path, model):
     x = image.img_to_array(img)
     x = np.expand_dims(x, axis=0)
     # Making Predictions
-    preds = model.predict(x)
-    print(f"Probability Array: {preds}")
-    preds = np.argmax(preds, axis=1)
-    return preds
+    result = model.predict(x)
+    prediction = np.argmax(result, axis=1)
+    probability = np.max(result,axis=1)
+    print(prediction)
+    print(probability)
+    return {
+        "prediction": prediction,
+        "probability": probability
+    }
 
 
 app = FastAPI()
@@ -56,11 +61,7 @@ def image_generator(base64string):
 def predict(image):
     dis_status = random.choice(["Risk", "No Risk"])
     probability = random.uniform(0.5, 1)
-    return {
-        "status": "success",
-        "message": dis_status,
-        "probability": probability,
-    }
+    
 
 
 @app.get("/")
@@ -74,16 +75,20 @@ def get_predictionbase64(img: ImageModel):
     image = image_generator(img.base64str)
     file_path = f"./{str(uuid.uuid4())}.png"
     image.save(file_path)
-
     #Make Prediction
-    preds = model_predict(file_path, model)
-    print(preds)
+    result = model_predict(file_path, model)
+    dis_status = model_labels[result["prediction"][0]]
+    probability = max(result["probability"])
     if os.path.exists(file_path):
         os.remove(file_path)
     else:
         print("The file does not exist")
-    prediction = predict(image)
-    return prediction
+    return {
+        "status": "success",
+        "message": dis_status,
+        "probability": probability,
+    }
+    
 
 
 def start():
