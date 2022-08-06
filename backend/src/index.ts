@@ -4,11 +4,14 @@ import { authRouter } from "./controllers/auth";
 import { docRouter } from "./controllers/doc";
 import { imageUploadRouter } from "./controllers/image";
 import { patientRouter } from "./controllers/patient";
+import cors from "cors";
 
 const app = express();
 
 app.use(express.json({ limit: "100mb" }));
 app.use(morgan("tiny"));
+
+app.use(cors())
 
 // Custom routers
 app.use("/image", imageUploadRouter);
