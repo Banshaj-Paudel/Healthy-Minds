@@ -2,7 +2,7 @@ import express from "express";
 import morgan from "morgan";
 import { authRouter } from "./controllers/auth";
 import { docRouter } from "./controllers/doc";
-import { imageUploadRouter } from "./controllers/upload";
+import { imageUploadRouter } from "./controllers/image";
 import { patientRouter } from "./controllers/patient";
 
 const app = express();
