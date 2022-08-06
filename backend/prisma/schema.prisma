@@ -21,10 +21,11 @@ model Doctor {
 }
 
 model Patient {
-  id     Int     @id @default(autoincrement())
-  name   String
-  image  String
-  report String?
+  id          Int     @id @default(autoincrement())
+  name        String
+  phoneNumber String
+  image       String
+  report      String?
 
   diagnostics Diagnostic[]
 

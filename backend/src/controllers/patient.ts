@@ -9,6 +9,7 @@ export const patientRouter = Router();
 interface CreatePatientDto {
   name: string;
   image: string;
+  phoneNumber: string;
 }
 
 interface UpdateDiagnosticDto {
